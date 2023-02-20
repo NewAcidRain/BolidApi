@@ -1,16 +1,23 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.generics import ListAPIView,GenericAPIView
+from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.shortcuts import redirect
 from .models import Events, Sensors
 from .serializers import EventSerializer, SensorsSerializer, EventsCreateSerializer
+from drf_yasg.utils import swagger_auto_schema
+from .responses import *
+
+def StartPage(request):
+    return redirect("/admin/")
 
 
 class CreateEvents(GenericAPIView):
     serializer_class = EventsCreateSerializer
+    queryset = Events.objects.all()
 
+    @swagger_auto_schema(responses=response_schema_dict_create_events)
     def post(self, request):
         serializer = EventsCreateSerializer(data=request.data, many=True)
         if serializer.is_valid(raise_exception=True):
@@ -25,10 +32,15 @@ class GetEvents(ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['id', 'temperature', 'humidity']
 
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 
 class UpdateEvents(GenericAPIView):
     serializer_class = EventSerializer
+    queryset = Events.objects.all()
 
+    @swagger_auto_schema(responses=response_schema_dict_update_events)
     def post(self, request, pk):
         if not pk:
             return Response("Method POST is not allowed", status=400)
@@ -44,7 +56,9 @@ class UpdateEvents(GenericAPIView):
 
 class DeleteEvents(GenericAPIView):
     serializer_class = EventSerializer
+    queryset = Events.objects.all()
 
+    @swagger_auto_schema(responses=response_schema_dict_delete_events)
     def delete(self, request, pk):
         try:
             event = Events.objects.get(pk=pk)
@@ -57,7 +71,9 @@ class DeleteEvents(GenericAPIView):
 
 class CreateSensors(GenericAPIView):
     serializer_class = SensorsSerializer
+    queryset = Sensors.objects.all()
 
+    @swagger_auto_schema(responses=response_schema_dict_create_sensors)
     def post(self, request):
         serializer = SensorsSerializer(data=request.data, many=True)
         if serializer.is_valid(raise_exception=True):
@@ -72,10 +88,15 @@ class GetSensors(ListAPIView):
     queryset = Sensors.objects.all()
     serializer_class = SensorsSerializer
 
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 
 class UpdateSensors(GenericAPIView):
     serializer_class = SensorsSerializer
+    queryset = Sensors.objects.all()
 
+    @swagger_auto_schema(responses=response_schema_dict_update_sensors)
     def post(self, request, pk):
         if not pk:
             return Response("Method POST is not allowed", status=400)
@@ -91,7 +112,9 @@ class UpdateSensors(GenericAPIView):
 
 class DeleteSensors(GenericAPIView):
     serializer_class = SensorsSerializer
+    queryset = Sensors.objects.all()
 
+    @swagger_auto_schema(responses=response_schema_dict_delete_sensors)
     def delete(self, request, pk):
         try:
             event = Sensors.objects.get(pk=pk)
