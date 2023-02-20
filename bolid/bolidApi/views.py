@@ -8,6 +8,10 @@ from .models import Events, Sensors
 from .serializers import EventSerializer, SensorsSerializer, EventsCreateSerializer
 from drf_yasg.utils import swagger_auto_schema
 from .responses import *
+from rest_framework.parsers import FileUploadParser
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.decorators import parser_classes
+
 
 def StartPage(request):
     return redirect("/admin/")
@@ -123,3 +127,26 @@ class DeleteSensors(GenericAPIView):
         event.delete()
         event.save()
         return Response(f"Sensor id = {pk} was deleted", status=200)
+
+
+
+class EventsParse(APIView):
+    parser_class = FileUploadParser
+
+    def put(self, request):
+        file = request.data
+        print(file)
+        for i in file:
+            try:
+                sensor_id = Sensors.objects.get(id=i['sensor_id'])
+            except Sensors.ObjectDoesNotExist:
+                return Response("Invalid JSON data", status=400)
+            name = i['name']
+            try:
+                temperature = i['temperature']
+                humidity = i['humidity']
+            except KeyError:
+                temperature = None
+                humidity = None
+            Events.objects.create(sensor_id=sensor_id, name=name, temperature=temperature, humidity=humidity)
+        return Response(status=200)
