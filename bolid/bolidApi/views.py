@@ -11,6 +11,7 @@ from .responses import *
 from rest_framework.parsers import FileUploadParser
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import parser_classes
+from rest_framework.permissions import IsAuthenticated
 
 
 def StartPage(request):
@@ -20,8 +21,17 @@ def StartPage(request):
 class CreateEvents(GenericAPIView):
     serializer_class = EventsCreateSerializer
     queryset = Events.objects.all()
+    permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(responses=response_schema_dict_create_events)
+    @swagger_auto_schema(responses=response_schema_dict_create_events,
+                         manual_parameters=[openapi.Parameter(
+                             name="Authorization",
+                             description="Authorization token",
+                             required=True,
+                             type=openapi.TYPE_STRING,
+                             in_=openapi.IN_HEADER,
+                         ), ]
+                         )
     def post(self, request):
         serializer = EventsCreateSerializer(data=request.data, many=True)
         if serializer.is_valid(raise_exception=True):
@@ -30,21 +40,40 @@ class CreateEvents(GenericAPIView):
 
 
 class GetEvents(ListAPIView):
+    permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
     queryset = Events.objects.all()
     serializer_class = EventSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['id', 'temperature', 'humidity']
 
+    @swagger_auto_schema(responses=response_schema_dict_delete_sensors,
+                         manual_parameters=[openapi.Parameter(
+                             name="Authorization",
+                             description="Authorization token",
+                             required=True,
+                             type=openapi.TYPE_STRING,
+                             in_=openapi.IN_HEADER,
+                         ), ]
+                         )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
 
 class UpdateEvents(GenericAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = EventSerializer
     queryset = Events.objects.all()
 
-    @swagger_auto_schema(responses=response_schema_dict_update_events)
+    @swagger_auto_schema(responses=response_schema_dict_update_events,
+                         manual_parameters=[openapi.Parameter(
+                             name="Authorization",
+                             description="Authorization token",
+                             required=True,
+                             type=openapi.TYPE_STRING,
+                             in_=openapi.IN_HEADER,
+                         ), ]
+                         )
     def post(self, request, pk):
         if not pk:
             return Response("Method POST is not allowed", status=400)
@@ -59,10 +88,19 @@ class UpdateEvents(GenericAPIView):
 
 
 class DeleteEvents(GenericAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = EventSerializer
     queryset = Events.objects.all()
 
-    @swagger_auto_schema(responses=response_schema_dict_delete_events)
+    @swagger_auto_schema(responses=response_schema_dict_delete_events,
+                         manual_parameters=[openapi.Parameter(
+                             name="Authorization",
+                             description="Authorization token",
+                             required=True,
+                             type=openapi.TYPE_STRING,
+                             in_=openapi.IN_HEADER,
+                         ), ]
+                         )
     def delete(self, request, pk):
         try:
             event = Events.objects.get(pk=pk)
@@ -74,10 +112,19 @@ class DeleteEvents(GenericAPIView):
 
 
 class CreateSensors(GenericAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = SensorsSerializer
     queryset = Sensors.objects.all()
 
-    @swagger_auto_schema(responses=response_schema_dict_create_sensors)
+    @swagger_auto_schema(responses=response_schema_dict_create_sensors,
+                         manual_parameters=[openapi.Parameter(
+                             name="Authorization",
+                             description="Authorization token",
+                             required=True,
+                             type=openapi.TYPE_STRING,
+                             in_=openapi.IN_HEADER,
+                         ), ]
+                         )
     def post(self, request):
         serializer = SensorsSerializer(data=request.data, many=True)
         if serializer.is_valid(raise_exception=True):
@@ -88,19 +135,37 @@ class CreateSensors(GenericAPIView):
 
 
 class GetSensors(ListAPIView):
+    permission_classes = [IsAuthenticated]
     pagination_class = PageNumberPagination
     queryset = Sensors.objects.all()
     serializer_class = SensorsSerializer
 
+    @swagger_auto_schema(manual_parameters=[openapi.Parameter(
+        name="Authorization",
+        description="Authorization token",
+        required=True,
+        type=openapi.TYPE_STRING,
+        in_=openapi.IN_HEADER,
+    ), ]
+    )
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
 
 class UpdateSensors(GenericAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = SensorsSerializer
     queryset = Sensors.objects.all()
 
-    @swagger_auto_schema(responses=response_schema_dict_update_sensors)
+    @swagger_auto_schema(responses=response_schema_dict_update_sensors,
+                         manual_parameters=[openapi.Parameter(
+                             name="Authorization",
+                             description="Authorization token",
+                             required=True,
+                             type=openapi.TYPE_STRING,
+                             in_=openapi.IN_HEADER,
+                         ), ]
+                         )
     def post(self, request, pk):
         if not pk:
             return Response("Method POST is not allowed", status=400)
@@ -115,10 +180,19 @@ class UpdateSensors(GenericAPIView):
 
 
 class DeleteSensors(GenericAPIView):
+    permission_classes = [IsAuthenticated]
     serializer_class = SensorsSerializer
     queryset = Sensors.objects.all()
 
-    @swagger_auto_schema(responses=response_schema_dict_delete_sensors)
+    @swagger_auto_schema(responses=response_schema_dict_delete_sensors,
+                         manual_parameters=[openapi.Parameter(
+                             name="Authorization",
+                             description="Authorization token",
+                             required=True,
+                             type=openapi.TYPE_STRING,
+                             in_=openapi.IN_HEADER,
+                         ), ]
+                         )
     def delete(self, request, pk):
         try:
             event = Sensors.objects.get(pk=pk)
@@ -129,11 +203,11 @@ class DeleteSensors(GenericAPIView):
         return Response(f"Sensor id = {pk} was deleted", status=200)
 
 
-
 class EventsParse(APIView):
+    permission_classes = [IsAuthenticated]
     parser_class = FileUploadParser
 
-    @swagger_auto_schema(operation_description="Need to use postman or smth, add .json file")
+    @swagger_auto_schema(operation_description="Need to use postman or smth, add .json file", )
     def put(self, request):
         file = request.data
         print(file)
