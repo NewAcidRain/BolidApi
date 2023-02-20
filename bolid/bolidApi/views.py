@@ -133,6 +133,7 @@ class DeleteSensors(GenericAPIView):
 class EventsParse(APIView):
     parser_class = FileUploadParser
 
+    @swagger_auto_schema(operation_description="Need to use postman or smth, add .json file")
     def put(self, request):
         file = request.data
         print(file)
