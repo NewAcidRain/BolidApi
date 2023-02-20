@@ -25,7 +25,7 @@ services:
       restart: always
 
   web:
-      working_dir: /bolid
+      working_dir: /bolid/bolid/
       volumes:
         - .:/bolid
       build: .
@@ -33,7 +33,7 @@ services:
       ports:
         - "8000:8000"
       env_file:
-        - bolid/.env
+        - ./bolid/.env
       depends_on:
         - db
 volumes:

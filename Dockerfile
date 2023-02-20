@@ -4,5 +4,5 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update
 WORKDIR /bolid
 COPY requirements.txt /bolid/
-RUN pip install --default-timeout=100 -r requirements.txt
+RUN pip install -r requirements.txt
 COPY ./bolid /bolid/

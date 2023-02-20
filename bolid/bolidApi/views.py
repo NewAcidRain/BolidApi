@@ -1,5 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView,GenericAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,7 +8,8 @@ from .models import Events, Sensors
 from .serializers import EventSerializer, SensorsSerializer, EventsCreateSerializer
 
 
-class CreateEvents(APIView):
+class CreateEvents(GenericAPIView):
+    serializer_class = EventsCreateSerializer
 
     def post(self, request):
         serializer = EventsCreateSerializer(data=request.data, many=True)
@@ -25,7 +26,8 @@ class GetEvents(ListAPIView):
     filterset_fields = ['id', 'temperature', 'humidity']
 
 
-class UpdateEvents(APIView):
+class UpdateEvents(GenericAPIView):
+    serializer_class = EventSerializer
 
     def post(self, request, pk):
         if not pk:
@@ -40,7 +42,8 @@ class UpdateEvents(APIView):
         return Response(serializer.data)
 
 
-class DeleteEvents(APIView):
+class DeleteEvents(GenericAPIView):
+    serializer_class = EventSerializer
 
     def delete(self, request, pk):
         try:
@@ -52,7 +55,8 @@ class DeleteEvents(APIView):
         return Response(f"Event id = {pk} was deleted", status=200)
 
 
-class CreateSensors(APIView):
+class CreateSensors(GenericAPIView):
+    serializer_class = SensorsSerializer
 
     def post(self, request):
         serializer = SensorsSerializer(data=request.data, many=True)
@@ -69,7 +73,8 @@ class GetSensors(ListAPIView):
     serializer_class = SensorsSerializer
 
 
-class UpdateSensors(APIView):
+class UpdateSensors(GenericAPIView):
+    serializer_class = SensorsSerializer
 
     def post(self, request, pk):
         if not pk:
@@ -84,7 +89,8 @@ class UpdateSensors(APIView):
         return Response(serializer.data)
 
 
-class DeleteSensors(APIView):
+class DeleteSensors(GenericAPIView):
+    serializer_class = SensorsSerializer
 
     def delete(self, request, pk):
         try:

@@ -41,6 +41,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'bolidApi',
+    'drf_yasg',
     'rest_framework',
     'django_filters',
     'django.contrib.admin',
