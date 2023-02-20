@@ -17,4 +17,5 @@ First start may take awhile because of docker build.
 ### Docs
 
 Project starts at localhost:8000
+
 Docs located at localhost:8000/swagger/
